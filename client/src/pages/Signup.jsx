@@ -4,6 +4,8 @@ import { Link } from "react-router-dom"
 
 export default function Signup() {
   const [formData, setFormData] = useState({});
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) =>{
     setFormData({
@@ -13,7 +15,10 @@ export default function Signup() {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3000/api/auth/signup',{
+    try {
+      setLoading(true)
+      setError(false)
+      const res = await fetch('http://localhost:3000/api/auth/signup',{
       method: 'POST',
       headers:{
         'Content-Type' : 'application/json',
@@ -21,7 +26,20 @@ export default function Signup() {
       body: JSON.stringify(formData)
     });
     const data = await res.json();
-    console.log(data)
+    setLoading(false)
+    if (data.success == false){
+      setError(true)
+      return;
+    }
+    
+    
+    } catch (error) {
+      setLoading(false)
+      setError(true)
+    }
+
+    
+
   }
 
   return (
@@ -31,15 +49,20 @@ export default function Signup() {
         <input type="text" placeholder="Username" id="username" className="bg-slate-100 p-3 rounded-lg" onChange={handleChange} />
         <input type="text" placeholder="Email" id="email" className="bg-slate-100 p-3 rounded-lg" onChange={handleChange} />
         <input type="password" placeholder="Password" id="password" className="bg-slate-100 p-3 rounded-lg" onChange={handleChange} />
-        <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">Sign Up</button>
+        <button disabled={loading} className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
+          {loading ? 'loading...':'Sign Up'}
+        </button>
       </form>
       <div className="flex gap-2 mt-5">
-        <p>Have an accoun?</p>
+        <p>Have an account?</p>
         <Link to={'/sign-in'}>
-        <span className="text-blue-500">Sign in</span>
+        <span className="text-blue-500 hover:underline">Sign in</span>
         </Link>
         
       </div>
+      <p className="text-red-700 mt-5">
+          {error && 'something went wrong'}
+        </p>
     </div>
   )
 }
