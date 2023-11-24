@@ -5,7 +5,7 @@ dotenv.config();
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import cors from 'cors';
-
+import cookieParser from 'cookie-parser'
 
 mongoose
 .connect(process.env.MONGO)
@@ -25,6 +25,7 @@ app.listen(3000, ()=>{
 });
 
 app.use(express.json())
+app.use(cookieParser());
 
 app.use('/api/user', userRoutes)
 app.use('/api/auth', authRoutes)
